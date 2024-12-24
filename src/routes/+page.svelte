@@ -81,21 +81,21 @@
                     // borderColor: (new Array(values.length)).fill(false),
                     borderWidth: 1,
                     // backgroundColor: (new Array(values.length)).fill(null),
-                    borderColor: (context) => {
-                        const chart = context.chart;
-                        const {ctx, chartArea} = chart;
-
-                        if(!chartArea) { return; }
-
-                        let gradient;
-                        gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                        for(let i = 0; i < TEMPERATURE.length; i = i + 1000) {
-                            //
-                            gradient.addColorStop(i / TEMPERATURE.length, TEMPERATURE[i]);
-                        }
-
-                        return gradient;
-                    }
+                    // borderColor: (context) => {
+                    //     const chart = context.chart;
+                    //     const {ctx, chartArea} = chart;
+                    //
+                    //     if(!chartArea) { return; }
+                    //
+                    //     let gradient;
+                    //     gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                    //     for(let i = 0; i < TEMPERATURE.length; i = i + 1000) {
+                    //         //
+                    //         gradient.addColorStop(i / TEMPERATURE.length, TEMPERATURE[i]);
+                    //     }
+                    //
+                    //     return gradient;
+                    // }
                 },
                 ]
             },
