@@ -159,7 +159,14 @@
     }
 </script>
 
-<main class="flex max-h-screen p-4 flex-wrap">
+<div class="w-full gap-3 text-center m-2 font-bold text-4xl page-title flex justify-center">
+    <a href="http://discord.gg/hNDKSCuD8G">
+        <div>StellaSora</div>
+        <div class="text-xs flex justify-center under-text underline">discord server</div>
+    </a>
+    <div> - #counting</div>
+</div>
+<main class="flex max-h-screen pr-2 pl-2 flex-wrap">
     <!-- <div class="w-64 flex flex-col"> -->
     <!--     <div class="font-bold uppercase">List of special numbers</div> -->
     <!--     <table> -->
@@ -185,5 +192,17 @@
     }
     .canvas-container {
         aspect-ratio: 2;
+    }
+
+    @font-face {
+        font-family: "krunch";
+        src: url("/fonts/krunch_italic.ttf");
+    }
+
+    .page-title {
+        font-family: "krunch";
+    }
+    .under-text {
+        line-height: 0;
     }
 </style>
