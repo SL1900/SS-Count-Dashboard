@@ -1,18 +1,22 @@
 <script lang="ts">
-    import Chart from "chart.js/auto";
+    import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement, TimeScale, Tooltip, Ticks } from "chart.js";
     import "chartjs-adapter-luxon";
     import ChartDataLabels from "chartjs-plugin-datalabels";
     // import "chartjs-plugin-zoom";
     import { onMount } from "svelte";
 
-    import data from "../total_messages.json";
+    import data from "../lib/total_messages.json";
+
+    let data_part = data.filter(m=>{
+        return (+m.content % 3 == 0) || (+m.content % 1000 == 0);
+        });
 
     // let labels = data.map(m=>m.timestamp.slice(0,10).replaceAll("-", ".")).reverse();
     // let labels = data.map(m=>m.timestamp).reverse();
-    let labels = data.map(m=>(new Date(m.timestamp)).toISOString() ).reverse();
-    let timestamps = data.map(m=>+(new Date(m.timestamp))).reverse();
-    let values = data.map(m=>m.content).reverse();
-    let authors = data.map(m=>m.author).reverse();
+    let labels = data_part.map(m=>(new Date(m.timestamp)).toISOString() ).reverse();
+    let timestamps = data_part.map(m=>+(new Date(m.timestamp))).reverse();
+    let values = data_part.map(m=>m.content).reverse();
+    let authors = data_part.map(m=>m.author).reverse();
 
     let ctx: CanvasRenderingContext2D;
     let chartCanvas: HTMLCanvasElement;
@@ -48,7 +52,7 @@
             let percent = (diff - min_diff) / (max_diff - min_diff);
             // let percent = (diff - min_diff) / (max_diff - min_diff);
 
-            console.log(diff, min_diff, max_diff, percent)
+            // console.log(diff, min_diff, max_diff, percent)
 
             let color = pickHex(COLORS.GREEN, COLORS.RED, percent);
             // console.log("#" + color.join(""), diff, max_diff, percent)
@@ -67,6 +71,8 @@
 
         ctx = chartCanvas.getContext("2d") as CanvasRenderingContext2D;
         Chart.register(ChartDataLabels);
+        Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale);
+        Chart.register(TimeScale, Tooltip);
 
         let chart = new Chart(ctx, {
             type: "line",
@@ -79,6 +85,7 @@
                     yAxisID: "y1",
                     pointStyle: (new Array(values.length)).fill(false),
                     // borderColor: (new Array(values.length)).fill(false),
+                    borderColor: "#36a2eb",
                     borderWidth: 1,
                     // backgroundColor: (new Array(values.length)).fill(null),
                     // borderColor: (context) => {
@@ -116,6 +123,9 @@
                     datalabels: {
                         align: "left",
                         formatter: function(value, context) {
+                            // console.log(context.dataset)
+                            // console.log(value)
+                            if(value % 1000 == 0) console.log(value)
                             return (context.dataset.data[context.dataIndex] as number || 0) % 1000 == 0 ? value : "";
                         }
                     },
@@ -130,9 +140,11 @@
             }
         });
 
-        for(let i = 0; i < values.length; i += 1000) {
-            //@ts-ignore
-            chart.config.data.datasets[0]["pointStyle"][i] = "cross";
+        for(let i = 0; i < values.length; i++) {
+            if(+values[i] % 1000 == 0) {
+                //@ts-ignore
+                chart.config.data.datasets[0]["pointStyle"][i] = "cross";
+            }
         }
     });
     function pickHex(color1: number[], color2: number[], weight: number) {
