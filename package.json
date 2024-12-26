@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-        "upload": "npm run build && cd ./build/ && scp -r ./ root@5.39.254.150:/var/www/sl-count.duckdns.org/ && ssh root@5.39.254.150 \"chmod -R 777 /var/www/sl-count.duckdns.org\"",
+		"upload": "npm run build && cd ./build/ && scp -r ./ root@5.39.254.150:/var/www/sl-count.duckdns.org/ && ssh root@5.39.254.150 \"chmod -R 777 /var/www/sl-count.duckdns.org\"",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
