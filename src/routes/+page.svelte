@@ -1,22 +1,17 @@
 <script lang="ts">
-    import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement, TimeScale, Tooltip, Ticks } from "chart.js";
+    import { CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement, TimeScale, Tooltip } from "chart.js";
     import "chartjs-adapter-luxon";
     import ChartDataLabels from "chartjs-plugin-datalabels";
     // import "chartjs-plugin-zoom";
     import { onMount } from "svelte";
 
-    import data from "../lib/total_messages.json";
+    // import data from "/total_messages.json";
+    let data: {
+        content: string,
+        timestamp: number,
+        author: string
+    }[];
 
-    let data_part = data.filter(m=>{
-        return (+m.content % 3 == 0) || (+m.content % 1000 == 0);
-        });
-
-    // let labels = data.map(m=>m.timestamp.slice(0,10).replaceAll("-", ".")).reverse();
-    // let labels = data.map(m=>m.timestamp).reverse();
-    let labels = data_part.map(m=>(new Date(m.timestamp)).toISOString() ).reverse();
-    let timestamps = data_part.map(m=>+(new Date(m.timestamp))).reverse();
-    let values = data_part.map(m=>m.content).reverse();
-    let authors = data_part.map(m=>m.author).reverse();
 
     let ctx: CanvasRenderingContext2D;
     let chartCanvas: HTMLCanvasElement;
@@ -24,7 +19,16 @@
     let special_numbers: {author: string, value: number}[] = [];
     
     onMount(async () => {
-        UpdateSpecial();
+        data = await (await fetch("/total_messages.json")).json();
+
+        let data_part = data.filter(m=>{return (+m.content % 3 == 0) || (+m.content % 1000 == 0);});
+
+        let labels = data_part.map(m=>(new Date(m.timestamp)).toISOString() ).reverse();
+        let timestamps = data_part.map(m=>+(new Date(m.timestamp))).reverse();
+        let values = data_part.map(m=>m.content).reverse();
+        let authors = data_part.map(m=>m.author).reverse();
+
+        // UpdateSpecial();
 
         let max_diff = 0;
         let min_diff = 100000000;
@@ -111,7 +115,7 @@
                 maintainAspectRatio: true,
                 aspectRatio: 2,
                 resizeDelay: 100,
-                onResize(chart, size) {
+                onResize(chart, _) {
                     chart.resize();
                 },
                 scales: {
@@ -125,7 +129,6 @@
                         formatter: function(value, context) {
                             // console.log(context.dataset)
                             // console.log(value)
-                            if(value % 1000 == 0) console.log(value)
                             return (context.dataset.data[context.dataIndex] as number || 0) % 1000 == 0 ? value : "";
                         }
                     },
@@ -157,18 +160,18 @@
         return rgb.map(e=>e.toString());
     }
 
-    function UpdateSpecial() {
-        for(let i = 0; i < values.length; i++) {
-            if(+values[i] % 1000 !== 0) continue;
-
-            special_numbers.push({
-                author: authors[i],
-                value: Number.parseInt(values[i])
-            });
-        }
-        //@ts-ignore
-        special_numbers = special_numbers;
-    }
+    // function UpdateSpecial() {
+    //     for(let i = 0; i < values.length; i++) {
+    //         if(+values[i] % 1000 !== 0) continue;
+    //
+    //         special_numbers.push({
+    //             author: authors[i],
+    //             value: Number.parseInt(values[i])
+    //         });
+    //     }
+    //     //@ts-ignore
+    //     special_numbers = special_numbers;
+    // }
 </script>
 
 <div class="w-full gap-3 text-center m-2 font-bold text-4xl page-title flex justify-center">
