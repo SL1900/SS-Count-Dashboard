@@ -142,6 +142,10 @@
 
 </script>
 
+<svelte:head>
+    <meta name="description" content="Graph of StellaSora official discord server #counting channel" >
+</svelte:head>
+
 <div class="w-full gap-3 text-center m-2 font-bold text-4xl page-title flex justify-center">
     <a href="http://discord.gg/hNDKSCuD8G">
         <div>StellaSora</div>
