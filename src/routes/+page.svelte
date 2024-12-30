@@ -178,15 +178,15 @@
             </div>
             <RangeSlider pips pipstep={60 * 1000} step={3_600_000 / 4} range pushy bind:values={slider_values} min={slider_min} max={slider_max} />
         </div>
-        <div class="people-select flex">
-            <div class="text">People selected:</div>
-            <MultiSelect options={[
-                { value: "opt1", text: "Option 1", selected: true},
-                    { value: "opt2", text: "Option 2", selected: true},
-                    { value: "opt3", text: "Option 3", selected: false},
-                    { value: "opt4", text: "Option 4", selected: true},
-            ]} />
-        </div>
+        <!-- <div class="people-select flex"> -->
+        <!--     <div class="text">People selected:</div> -->
+        <!--     <MultiSelect options={[ -->
+        <!--         { value: "opt1", text: "Option 1", selected: true}, -->
+        <!--             { value: "opt2", text: "Option 2", selected: true}, -->
+        <!--             { value: "opt3", text: "Option 3", selected: false}, -->
+        <!--             { value: "opt4", text: "Option 4", selected: true}, -->
+        <!--     ]} /> -->
+        <!-- </div> -->
     </div>
     <iframe class="flex-1 min-h-96" title="KarmaSkeleton" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdkxOhKVUS0H831xeSF4J5HLeMP-vcdNoDt6y64n3hHC1lVnuLhfD-iIyqKSlqQmMR4pSk7C-tWrFn/pubhtml?widget=true&amp;headers=false"></iframe>
 </main>
