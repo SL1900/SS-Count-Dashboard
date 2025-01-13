@@ -7,6 +7,7 @@
     import { onMount } from "svelte";
     import { FormatTimestamp } from "$lib/utils";
     import MultiSelect from "$lib/components/MultiSelect.svelte";
+    import { BarLoader } from "svelte-loading-spinners";
 
     let ctx: CanvasRenderingContext2D;
     let chartCanvas: HTMLCanvasElement;
@@ -16,6 +17,8 @@
     let labels: string[] = [];
     let values: number[] = [];
     let authors: string[] = [];
+
+    let data_loaded = false;
 
     //Time slider
     let slider_values = [0,0];
@@ -73,7 +76,10 @@
     }
 
     onMount(async () => {
-        data = await (await fetch("/total_messages.json")).json();
+        let data_request = await (await fetch("/total_messages.json")).json();
+        data_loaded = true;
+
+        data = data_request;
 
         UpdateData();
 
@@ -160,7 +166,12 @@
 
     <!-- MAIN CONTENT -->
     <div class="flex max-h-screen pr-2 pl-2 flex-wrap">
-        <div class="canvas-container bg-white flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
+        {#if !data_loaded}
+            <div class="bg-white flex justify-center items-center flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
+                <BarLoader size="120" color="#6666ff" />
+            </div>
+        {/if}
+        <div class="canvas-container {!data_loaded ? "hidden" : ""} bg-white flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
             <canvas bind:this={chartCanvas}></canvas>
             <div class="range-container flex flex-col">
                 <div class="time-labels flex justify-between">
@@ -183,17 +194,18 @@
                     bind:values={slider_values}
                     min={slider_min}
                     max={slider_max}
+                    springValues={{ stiffness: 0.15, damping: 1}}
                 />
             </div>
-<!-- <div class="people-select flex"> -->
-<!--     <div class="text">People selected:</div> -->
-<!--     <MultiSelect options={[ -->
-    <!--         { value: "opt1", text: "Option 1", selected: true}, -->
-        <!--             { value: "opt2", text: "Option 2", selected: true}, -->
-        <!--             { value: "opt3", text: "Option 3", selected: false}, -->
-        <!--             { value: "opt4", text: "Option 4", selected: true}, -->
-        <!--     ]} /> -->
-        <!-- </div> -->
+            <!-- <div class="people-select flex"> -->
+            <!--     <div class="text">People selected:</div> -->
+            <!--     <MultiSelect options={[ -->
+            <!--             { value: "opt1", text: "Option 1", selected: true}, -->
+            <!--             { value: "opt2", text: "Option 2", selected: true}, -->
+            <!--             { value: "opt3", text: "Option 3", selected: false}, -->
+            <!--             { value: "opt4", text: "Option 4", selected: true}, -->
+            <!--     ]} /> -->
+            <!-- </div> -->
         </div>
         <iframe class="flex-1 min-h-96" title="KarmaSkeleton" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdkxOhKVUS0H831xeSF4J5HLeMP-vcdNoDt6y64n3hHC1lVnuLhfD-iIyqKSlqQmMR4pSk7C-tWrFn/pubhtml?widget=true&amp;headers=false"></iframe>
     </div>
