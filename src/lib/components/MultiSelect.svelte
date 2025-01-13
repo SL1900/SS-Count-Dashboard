@@ -38,15 +38,18 @@
         let index = options.findIndex(e=>e.value==value);
         options[index].selected = !options[index].selected;
     }
-    function OnClick(event: MouseEvent) {
+    function OnClick(event: MouseEvent | KeyboardEvent) {
         active = true;
         setTimeout(()=>{ input_element.focus(); },100);
     }
 </script>
 
-<main
+<div
+    role="button"
+    tabindex="0"
     class="flex flex-col flex-1 relative box-content border-red-400 border-2 min-h-8 p-1 gap-2 rounded"
     on:click={OnClick}
+    on:keydown={OnClick}
     use:HandleFocusLeave={()=>{ active = false}}
     use:HandleClickOutside={()=>{ active = false}}
 >
@@ -60,7 +63,12 @@
             <input bind:value={input_value} bind:this={input_element} class="border-2 border-black" type="text">
             <div class="list">
                 {#each options_shown as option}
-                    <div class="main-list-item flex gap-1" on:click={(e)=>{e.stopPropagation();ToggleSelect(option.value)}}>
+                    <div
+                        role="button" tabindex="0"
+                        class="main-list-item flex gap-1"
+                        on:click={(e)=>{e.stopPropagation();ToggleSelect(option.value)}}
+                        on:keydown={((e)=>{if(e.key == " ") ToggleSelect(option.value)})}
+                    >
                         <div class="text-node">{option.text}</div>
                         <div class="selected-node">{option.selected ? "✅" : "❌"}</div>
                     </div>
@@ -68,4 +76,4 @@
             </div>
         {/if}
     </div>
-</main>
+</div>
