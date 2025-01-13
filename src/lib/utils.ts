@@ -1,4 +1,4 @@
-export function FormatTimestamp(timestamp: number) {
+export function FormatTimestamp(timestamp: number, include_time: boolean = true) {
     let date = new Date(timestamp);
 
     let str = date.toLocaleString('en-us', {
@@ -9,6 +9,9 @@ export function FormatTimestamp(timestamp: number) {
         minute: "2-digit"
     });
 
-    return str.replace(/(\d+)\/(\d+)\/(\d+)/, "$3-$1-$2");
+    let result = str.replace(/(\d+)\/(\d+)\/(\d+)/, "$3-$1-$2");
+    if(!include_time) result = result.slice(0, result.indexOf(","));
+
+    return result;
 }
 
