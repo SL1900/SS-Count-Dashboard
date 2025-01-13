@@ -77,10 +77,10 @@
 
         UpdateData();
 
-        let slider_hours_start = Math.floor(timestamps[0] / (60 * 60 * 1000));
+        let slider_days_start = Math.floor(timestamps[0] / (24 * 60 * 60 * 1000));
         let slider_hours_end = Math.ceil(timestamps[timestamps.length - 1] / (60 * 60 * 1000));
 
-        slider_min = slider_hours_start * 60 * 60 * 1000;
+        slider_min = slider_days_start * 24 * 60 * 60 * 1000;
         slider_max = slider_hours_end * 60 * 60 * 1000;
 
         slider_values = [slider_min, slider_max];
@@ -147,48 +147,56 @@
     <meta name="description" content="Graph of StellaSora official discord server #counting channel" >
 </svelte:head>
 
-<div class="w-full gap-3 text-center m-2 font-bold text-4xl page-title flex justify-center">
-    <a href="http://discord.gg/hNDKSCuD8G">
-        <div>StellaSora</div>
-        <div class="text-xs flex justify-center under-text underline">discord server</div>
-    </a>
-    <div>-</div>
-    <div>#counting</div>
-</div>
-<main class="flex max-h-screen pr-2 pl-2 flex-wrap">
-    <!-- <div class="w-64 flex flex-col"> -->
-    <!--     <div class="font-bold uppercase">List of special numbers</div> -->
-    <!--     <table> -->
-    <!--         <tbody> -->
-    <!--             {#each special_numbers as sn} -->
-    <!--                 <tr> -->
-    <!--                     <td class="p-1 border-sky-800 border-2">{sn.author}</td> -->
-    <!--                     <td class="p-1 border-sky-800 border-2">{sn.value}</td> -->
-    <!--                 </tr> -->
-    <!--             {/each} -->
-    <!--         </tbody> -->
-    <!--     </table> -->
-    <!-- </div> -->
-    <div class="canvas-container flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
-        <canvas bind:this={chartCanvas}></canvas>
-        <div class="range-container flex flex-col">
-            <div class="time-labels flex justify-between">
-                <div class="start_time">{FormatTimestamp(slider_values[0])}</div>
-                <div class="end_time">{FormatTimestamp(slider_values[1])}</div>
+<main class="main-element h-full overflow-x-hidden min-h-screen">
+    <!-- HEADER -->
+    <div class="w-full gap-3 text-center m-2 font-bold text-4xl page-title flex justify-center">
+        <a href="http://discord.gg/hNDKSCuD8G">
+            <div>StellaSora</div>
+            <div class="text-xs flex justify-center under-text underline">discord server</div>
+        </a>
+        <div>-</div>
+        <div>#counting</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex max-h-screen pr-2 pl-2 flex-wrap">
+        <div class="canvas-container bg-white flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
+            <canvas bind:this={chartCanvas}></canvas>
+            <div class="range-container flex flex-col">
+                <div class="time-labels flex justify-between">
+                    <div class="start_time">{FormatTimestamp(slider_values[0])}</div>
+                    <div class="end_time">{FormatTimestamp(slider_values[1])}</div>
+                </div>
+                <RangeSlider
+                    id="time-slider"
+                    hoverable
+                    all="label"
+                    formatter={(v,i,p) => {
+                        let date = new Date(v);
+                        return v % 86400 == 0 ? 
+                            `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth()+1).toString().padStart(2, "0")}` 
+                            : "";
+                    }}
+                    pips pipstep={4 * 24}
+                    step={3_600_000 / 4}
+                    range pushy
+                    bind:values={slider_values}
+                    min={slider_min}
+                    max={slider_max}
+                />
             </div>
-            <RangeSlider pips pipstep={60 * 1000} step={3_600_000 / 4} range pushy bind:values={slider_values} min={slider_min} max={slider_max} />
-        </div>
-        <!-- <div class="people-select flex"> -->
-        <!--     <div class="text">People selected:</div> -->
-        <!--     <MultiSelect options={[ -->
-        <!--         { value: "opt1", text: "Option 1", selected: true}, -->
+<!-- <div class="people-select flex"> -->
+<!--     <div class="text">People selected:</div> -->
+<!--     <MultiSelect options={[ -->
+    <!--         { value: "opt1", text: "Option 1", selected: true}, -->
         <!--             { value: "opt2", text: "Option 2", selected: true}, -->
         <!--             { value: "opt3", text: "Option 3", selected: false}, -->
         <!--             { value: "opt4", text: "Option 4", selected: true}, -->
         <!--     ]} /> -->
         <!-- </div> -->
+        </div>
+        <iframe class="flex-1 min-h-96" title="KarmaSkeleton" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdkxOhKVUS0H831xeSF4J5HLeMP-vcdNoDt6y64n3hHC1lVnuLhfD-iIyqKSlqQmMR4pSk7C-tWrFn/pubhtml?widget=true&amp;headers=false"></iframe>
     </div>
-    <iframe class="flex-1 min-h-96" title="KarmaSkeleton" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdkxOhKVUS0H831xeSF4J5HLeMP-vcdNoDt6y64n3hHC1lVnuLhfD-iIyqKSlqQmMR4pSk7C-tWrFn/pubhtml?widget=true&amp;headers=false"></iframe>
 </main>
 
 <style>
@@ -209,5 +217,24 @@
     }
     .under-text {
         line-height: 0;
+    }
+    .main-element::after {
+        content: "";
+        position: absolute;
+        /* inset: -50%; */
+        inset: 0;
+        --grid-color: #cccccc22;
+        --grid-size: 20px;
+        background-size: var(--grid-size) var(--grid-size);
+        background-image: 
+            repeating-linear-gradient(45deg, transparent calc(50% - 1px), var(--grid-color) 50%, transparent calc(50% + 1px), transparent),
+            repeating-linear-gradient(-45deg, transparent calc(50% - 1px), var(--grid-color) 50%, transparent calc(50% + 1px), transparent)
+        ;
+        z-index: -1;
+    }
+    :global(#time-slider .pipVal) {
+        writing-mode: vertical-lr;
+        transform: rotate(180deg) translate(50%, -5%);
+        font-size: 0.85rem;
     }
 </style>
