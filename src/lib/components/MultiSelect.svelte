@@ -39,6 +39,10 @@
         options[index].selected = !options[index].selected;
     }
     function OnClick(event: MouseEvent | KeyboardEvent) {
+        if(active) {
+            active = false;
+            return;
+        }
         active = true;
         setTimeout(()=>{ input_element.focus(); },100);
     }
@@ -60,7 +64,7 @@
     </div>
     <div class="dropdown absolute border-2 border-blue-500 w-full">
         {#if active}
-            <input bind:value={input_value} bind:this={input_element} class="border-2 border-black" type="text">
+            <input bind:value={input_value} bind:this={input_element} on:click={(e)=>{e.stopPropagation();}} class="border-2 border-black" type="text">
             <div class="list">
                 {#each options_shown as option}
                     <div
