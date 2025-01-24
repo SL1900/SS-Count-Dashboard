@@ -97,10 +97,10 @@
         UpdateData();
 
         let slider_days_start = Math.floor(timestamps[0] / (24 * 60 * 60 * 1000));
-        let slider_hours_end = Math.ceil(timestamps[timestamps.length - 1] / (60 * 60 * 1000));
+        let slider_days_end = Math.ceil(timestamps[timestamps.length - 1] / (24 * 60 * 60 * 1000));
 
         slider_min = slider_days_start * 24 * 60 * 60 * 1000;
-        slider_max = slider_hours_end * 60 * 60 * 1000;
+        slider_max = slider_days_end * 24 * 60 * 60 * 1000;
 
         slider_values = [slider_min, slider_max];
 
