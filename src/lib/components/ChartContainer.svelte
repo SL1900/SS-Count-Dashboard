@@ -67,13 +67,22 @@
 
     let last_chart_update = 0;
     let chart_update_debounce_time = 100;
+    let color_timeout = 0;
     $: {
         line_color;
+
+        clearTimeout(color_timeout);
 
         if(data && (Date.now() - last_chart_update) > 500) {
             chart.data.datasets[0].borderColor = line_color;
             chart.data.datasets[0].backgroundColor = line_color;
             chart.update();
+        } else if(data) {
+            color_timeout = setTimeout(() => {
+                chart.data.datasets[0].borderColor = line_color;
+                chart.data.datasets[0].backgroundColor = line_color;
+                chart.update();
+            }, 500);
         }
     }
     $: {
