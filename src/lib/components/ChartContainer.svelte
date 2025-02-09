@@ -23,6 +23,10 @@
     let slider_min = 0;
     let slider_max = 0;
 
+    let show_crosses = true;
+    let cross_every_n = 10000;
+    let line_color = "#36a2eb";
+
     let chart: Chart;
     function UpdateData(from: number = 0, to: number = 0, each: number = 3) {
         let data_part = data.filter(m=>{
@@ -39,7 +43,7 @@
         else each = 64;
 
         data_part = data_part.filter(m=>{
-            return ((+m.content % each == 0) || (+m.content % 1000 == 0));
+            return ((+m.content % each == 0) || (+m.content % 1000 == 0)) || (+m.content % cross_every_n == 0);
         });
 
 
@@ -64,8 +68,20 @@
     let last_chart_update = 0;
     let chart_update_debounce_time = 100;
     $: {
+        line_color;
+
+        if(data && (Date.now() - last_chart_update) > 500) {
+            chart.data.datasets[0].borderColor = line_color;
+            chart.data.datasets[0].backgroundColor = line_color;
+            chart.update();
+        }
+    }
+    $: {
         slider_values;
-        if(data && (Date.now() - last_chart_update) > chart_update_debounce_time) {
+        cross_every_n;
+        show_crosses;
+
+        if(data && cross_every_n >= 1000 && (Date.now() - last_chart_update) > chart_update_debounce_time) {
             last_chart_update = Date.now();
 
             UpdateData(slider_values[0], slider_values[1]);
@@ -79,12 +95,13 @@
     function UpdateCrosses() {
         //@ts-ignore
         for(let i = 0; i < chart.config.data.datasets[0]["pointStyle"].length; i++) {
-            let isCross = +values[i] % 1000 == 0;
+            let isCross = +values[i] % cross_every_n == 0;
+            if(!show_crosses) isCross = false;
 
-                //@ts-ignore
-                chart.config.data.datasets[0]["pointStyle"][i] = isCross ? "cross" : "circle";
-                //@ts-ignore
-                chart.config.data.datasets[0]["pointRadius"][i] = isCross ? 10 : 1;
+            //@ts-ignore
+            chart.config.data.datasets[0]["pointStyle"][i] = isCross ? "cross" : "circle";
+            //@ts-ignore
+            chart.config.data.datasets[0]["pointRadius"][i] = isCross ? 10 : 1;
         }
     }
 
@@ -119,7 +136,8 @@
                     pointRadius: (new Array(values.length)).fill(1),
                     yAxisID: "y1",
                     pointStyle: (new Array(values.length)).fill("circle"),
-                    borderColor: "#36a2eb",
+                    borderColor: line_color,
+                    backgroundColor: line_color,
                     borderWidth: 1,
                 }]
             },
@@ -141,7 +159,7 @@
                             return { size: context.chart.width < 800 ? 8 : 12 }
                         },
                         formatter: function(value, context) {
-                            return (context.dataset.data[context.dataIndex] as number || 0) % 1000 == 0 ? value : "";
+                            return (context.dataset.data[context.dataIndex] as number || 0) % cross_every_n == 0 && show_crosses ? value : "";
                         }
                     },
                     tooltip: {
@@ -186,6 +204,23 @@
             max={slider_max}
             springValues={{ stiffness: 0.15, damping: 1}}
         />
+    </div>
+    <div class="flex">
+        <div class="flex flex-col mt-4 mr-2 gap-2 border-2 border-sky-300 p-2 rounded">
+            <label>Show numbers: <input type="checkbox" bind:checked={show_crosses}></label>
+            <div class="flex flex-col">
+                <div class="flex flex-row items-center">
+                    <div>Show number every:</div>
+                    <input class="w-24 border-sky-300 border-2 rounded text-right input ml-1 p-1" bind:value={cross_every_n} type="number">
+                </div>
+                {#if cross_every_n < 1000}
+                    <div class="text-red-700">Number should be higher than 1000</div>
+                {/if}
+            </div>
+        </div>
+        <div class="flex flex-col justify-center mt-4 mr-2 gap-2 border-2 border-sky-300 p-2 rounded">
+            <label class="flex items-center gap-2">Line color:<input class="rounded w-12 h-6" bind:value={line_color} type="color"></label>
+        </div>
     </div>
     <!-- <div class="people-select flex"> -->
     <!--     <div class="text">People selected:</div> -->
