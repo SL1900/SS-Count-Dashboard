@@ -158,8 +158,8 @@
                 onResize(chart, _) { chart.resize(); },
                 scales: {
                     x: { type: "time" },
-                    y1: { ticks: { stepSize: 100 }, position: "left" },
-                    y2: { ticks: { stepSize: 100 }, position: "right", grid: { drawOnChartArea: false } },
+                    y1: { ticks: { stepSize: 1000 }, position: "left" },
+                    y2: { ticks: { stepSize: 1000 }, position: "right", grid: { drawOnChartArea: false } },
                 },
                 plugins: {
                     datalabels: {
