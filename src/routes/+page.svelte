@@ -13,7 +13,7 @@
 
 <main class="main-element h-full overflow-x-hidden min-h-screen">
     <!-- HEADER -->
-    <div class="w-full gap-3 text-center m-2 font-bold text-4xl page-title flex justify-center">
+    <div class="w-full gap-3 text-center p-2 font-bold text-4xl page-title flex flex-wrap max-w-full box-border justify-center">
         <a href="http://discord.gg/hNDKSCuD8G">
             <div>StellaSora</div>
             <div class="text-xs flex justify-center under-text underline">discord server</div>
