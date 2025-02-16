@@ -115,7 +115,7 @@
     }
 
     onMount(async () => {
-        let data_request = await (await fetch("/total_messages.json")).json();
+        let data_request = await (await fetch("https://sl-count.duckdns.org/total_messages.json")).json();
         data_loaded = true;
 
         data = data_request;
