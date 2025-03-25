@@ -23,15 +23,23 @@
     </div>
 
     <!-- MAIN CONTENT -->
-    <div class="flex max-h-screen pr-2 pl-2 flex-wrap">
+    <div class="flex pr-2 pl-2 flex-wrap gap-1">
         {#if !data_loaded}
             <div class="bg-white flex justify-center items-center flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
                 <BarLoader size="120" color="#6666ff" />
             </div>
         {/if}
         <ChartContainer bind:data_loaded />
-        <iframe class="flex-1 min-h-96" title="KarmaSkeleton" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdkxOhKVUS0H831xeSF4J5HLeMP-vcdNoDt6y64n3hHC1lVnuLhfD-iIyqKSlqQmMR4pSk7C-tWrFn/pubhtml?widget=false&amp;headers=false"></iframe>
+        <iframe class="flex-1 min-h-96 border-2 border-sky-300" title="KarmaSkeleton" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdkxOhKVUS0H831xeSF4J5HLeMP-vcdNoDt6y64n3hHC1lVnuLhfD-iIyqKSlqQmMR4pSk7C-tWrFn/pubhtml?widget=false&amp;headers=false"></iframe>
     </div>
+    <!-- FOOTER -->
+    <footer class="bottom-0 flex justify-center flex-wrap">
+        <div>Github:
+            <a class="hover:underline text-blue-600" href="https://github.com/SL1900/SS-Count-Dashboard">SS-Count-Dashboard</a>
+        </div>
+        <div class="mx-1">|</div>
+        <div>Spreadsheet made and maintained by: KarmaSkeleton</div>
+    </footer>
 </main>
 
 <style>

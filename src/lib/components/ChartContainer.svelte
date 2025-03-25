@@ -188,7 +188,7 @@
     });
 </script>
 
-<div class="canvas-container {!data_loaded ? "hidden" : ""} bg-white flex-[3_3_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2 m-2">
+<div class="canvas-container {!data_loaded ? "hidden" : ""} bg-white flex-[2_2_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2">
     <canvas bind:this={chartCanvas}></canvas>
     <div class="range-container flex flex-col">
         <div class="time-labels flex justify-between">
