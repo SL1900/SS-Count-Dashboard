@@ -1,8 +1,8 @@
-name: Build and Deploy
+name: Build
 
 on:
   push:
-    branches: ["master", "deploy-test"]
+    branches: ["master"]
   workflow_dispatch:
 
 permissions:
