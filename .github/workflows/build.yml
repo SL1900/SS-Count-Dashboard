@@ -1,0 +1,29 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: ["master", "deploy-test"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5.0.0
+        id: pages
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - name: "npm build"
+        run: npm run build
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: ./build
