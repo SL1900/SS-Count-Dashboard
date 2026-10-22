@@ -22,7 +22,7 @@
 		"svelte-range-slider-pips": "^3.1.4",
 		"tailwindcss": "^4.3.3",
 		"typescript": "^5.0.0",
-		"vite": "^8.2.2"
+		"vite": "^8.3.5"
 	},
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.8",
