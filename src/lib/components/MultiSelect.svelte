@@ -4,25 +4,28 @@
         text: string,
         selected: boolean
     };
-    export let options: Option[] = [];
+    interface Props {
+        options?: Option[];
+    }
 
-    let active = false;
+    let { options = $bindable([]) }: Props = $props();
 
-    let input_value: string = "";
-    let input_element: HTMLInputElement;
+    let active = $state(false);
 
-    let options_shown: Option[] = [];
-    let selected_list: Option[] = [];
+    let input_value: string = $state("");
+    let input_element: HTMLInputElement = $state() as HTMLInputElement;
 
-    $: {
+    let options_shown: Option[] = $state([]);
+    let selected_list: Option[] = $state([]);
+
+    $effect(() => {
         input_value;
         options_shown = options.filter(o=>o.text.toLowerCase().includes(input_value.toLowerCase()));
-    }
-    $: {
+    });
+    $effect(() => {
         options;
         selected_list = options.filter(o=>o.selected);
-    }
-    let focus = false;
+    });
 
     function HandleFocusLeave(node: HTMLElement, cb: Function) {
         function Handle() { if(!node.contains(document.activeElement)) cb();}
@@ -52,8 +55,8 @@
     role="button"
     tabindex="0"
     class="flex flex-col flex-1 relative box-content border-red-400 border-2 min-h-8 p-1 gap-2 rounded"
-    on:click={OnClick}
-    on:keydown={OnClick}
+    onclick={OnClick}
+    onkeydown={OnClick}
     use:HandleFocusLeave={()=>{ active = false}}
     use:HandleClickOutside={()=>{ active = false}}
 >
@@ -64,14 +67,14 @@
     </div>
     <div class="dropdown absolute border-2 border-blue-500 w-full">
         {#if active}
-            <input bind:value={input_value} bind:this={input_element} on:click={(e)=>{e.stopPropagation();}} class="border-2 border-black" type="text">
+            <input bind:value={input_value} bind:this={input_element} onclick={(e)=>{e.stopPropagation();}} class="border-2 border-black" type="text">
             <div class="list">
                 {#each options_shown as option}
                     <div
                         role="button" tabindex="0"
                         class="main-list-item flex gap-1"
-                        on:click={(e)=>{e.stopPropagation();ToggleSelect(option.value)}}
-                        on:keydown={((e)=>{if(e.key == " ") ToggleSelect(option.value)})}
+                        onclick={(e)=>{e.stopPropagation();ToggleSelect(option.value)}}
+                        onkeydown={(e)=>{if(e.key == " ") ToggleSelect(option.value)}}
                     >
                         <div class="text-node">{option.text}</div>
                         <div class="selected-node">{option.selected ? "✅" : "❌"}</div>

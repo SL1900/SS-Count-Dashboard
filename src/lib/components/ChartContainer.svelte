@@ -4,31 +4,37 @@
     import ChartDataLabels from "chartjs-plugin-datalabels";
     import { onMount } from "svelte";
     import RangeSlider from "svelte-range-slider-pips";
-    import { FormatTimestamp } from "$lib/utils";
-    import MultiSelect from "$lib/components/MultiSelect.svelte";
+    import { FormatTimestamp } from "#lib/utils.ts";
 
     let ctx: CanvasRenderingContext2D;
-    let chartCanvas: HTMLCanvasElement;
+    let chartCanvas: HTMLCanvasElement = $state() as HTMLCanvasElement;
 
-    let data: {content: string, timestamp: number, author: string}[];
+    type DataEntry = { content: string, timestamp: number, author: string };
+    let data: DataEntry[] = [];
     let timestamps: number[] = [];
     let labels: string[] = [];
     let values: number[] = [];
     let authors: string[] = [];
 
-    export let data_loaded = false;
+    interface Props {
+        data_loaded?: boolean;
+    }
+
+    let { data_loaded = $bindable() }: Props = $props();
 
     //Time slider
-    let slider_values = [0,0];
-    let slider_min = 0;
-    let slider_max = 0;
+    let slider_values = $state([0,0]);
+    let slider_min = $state(0);
+    let slider_max = $state(0);
 
-    let show_crosses = true;
-    let cross_every_n = 10000;
-    let line_color = "#36a2eb";
+    let show_crosses = $state(true);
+    let cross_every_n = $state(10000);
+    let line_color = $state("#36a2eb");
 
-    let chart: Chart;
+    let chart: Chart | null = null;
+
     function UpdateData(from: number = 0, to: number = 0, each: number = 3) {
+        console.log("[Updating data]");
         let data_part = data.filter(m=>{
             return ( +(new Date(m.timestamp)) > from && +(new Date(m.timestamp)) < (to || Number.POSITIVE_INFINITY))
         ;});
@@ -68,40 +74,8 @@
     let last_chart_update = 0;
     let chart_update_debounce_time = 100;
     let color_timeout = 0;
-    $: {
-        line_color;
-
-        clearTimeout(color_timeout);
-
-        if(data && (Date.now() - last_chart_update) > 500) {
-            chart.data.datasets[0].borderColor = line_color;
-            chart.data.datasets[0].backgroundColor = line_color;
-            chart.update();
-        } else if(data) {
-            color_timeout = setTimeout(() => {
-                chart.data.datasets[0].borderColor = line_color;
-                chart.data.datasets[0].backgroundColor = line_color;
-                chart.update();
-            }, 500);
-        }
-    }
-    $: {
-        slider_values;
-        cross_every_n;
-        show_crosses;
-
-        if(data && cross_every_n >= 1000 && (Date.now() - last_chart_update) > chart_update_debounce_time) {
-            last_chart_update = Date.now();
-
-            UpdateData(slider_values[0], slider_values[1]);
-            UpdateCrosses();
-            chart.data.datasets[0].data = values;
-            // //@ts-ignore
-            chart.data.labels = labels;
-            chart.update();
-        }
-    }
     function UpdateCrosses() {
+        if(!chart) return;
         //@ts-ignore
         for(let i = 0; i < chart.config.data.datasets[0]["pointStyle"].length; i++) {
             let isCross = +values[i] % cross_every_n == 0;
@@ -155,7 +129,6 @@
                 maintainAspectRatio: true,
                 aspectRatio: 2,
                 resizeDelay: 100,
-                onResize(chart, _) { chart.resize(); },
                 scales: {
                     x: { type: "time" },
                     y1: { ticks: { stepSize: 1000 }, position: "left" },
@@ -186,6 +159,42 @@
 
         UpdateCrosses();
     });
+    function SettingsChange(slider_values: number[], cross_every_n: number, show_crosses: boolean = true) {
+        if(data && chart && cross_every_n >= 1000 && (Date.now() - last_chart_update) > chart_update_debounce_time) {
+            last_chart_update = Date.now();
+
+            UpdateData(slider_values[0], slider_values[1]);
+            UpdateCrosses();
+            chart.data.datasets[0].data = values;
+            //@ts-ignore
+            chart.data.labels = labels;
+            chart.update();
+        }
+    }
+    $effect(() => {
+        console.log("[Updating after settings change]");
+        SettingsChange(slider_values, cross_every_n);
+    });
+    function UpdateColor(line_color: string) {
+        clearTimeout(color_timeout);
+
+        if(data && chart && (Date.now() - last_chart_update) > 500) {
+            chart.data.datasets[0].borderColor = line_color;
+            chart.data.datasets[0].backgroundColor = line_color;
+            chart.update();
+        } else if(data) {
+            color_timeout = setTimeout(() => {
+                if(!chart) return;
+                chart.data.datasets[0].borderColor = line_color;
+                chart.data.datasets[0].backgroundColor = line_color;
+                chart.update();
+            }, 500);
+        }
+    }
+    $effect(() => {
+        console.log("[Updating after color change]");
+        UpdateColor(line_color);
+    });
 </script>
 
 <div class="canvas-container {!data_loaded ? "hidden" : ""} bg-white flex-[2_2_0%] w-full xl:w-1/2 relative border-2 border-sky-300 p-2">
@@ -199,7 +208,7 @@
             id="time-slider"
             hoverable
             all="label"
-            formatter={(v,i,p) => {
+            formatter={(v) => {
                 let date = new Date(v);
                 return v % 86400 == 0 ? 
                     `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth()+1).toString().padStart(2, "0")}` 

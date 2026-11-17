@@ -1,10 +1,10 @@
 <script lang="ts">
  
     // import "chartjs-plugin-zoom";
-    import ChartContainer from "$lib/components/ChartContainer.svelte";
+    import ChartContainer from "#lib/components/ChartContainer.svelte";
     import { BarLoader } from "svelte-loading-spinners";
 
-    let data_loaded = false;
+    let data_loaded = $state(false);
 </script>
 
 <svelte:head>
